@@ -1,17 +1,19 @@
 # standard_library.py
 """Python Essentials: The Standard Library.
-<Name>
-<Class>
-<Date>
+<Parker Carlson>
+<MTH 420>
+<4/8/22>
 """
 
+import calculator as calc
+from itertools import combinations
 
 # Problem 1
 def prob1(L):
     """Return the minimum, maximum, and average of the entries of L
     (in that order).
     """
-    raise NotImplementedError("Problem 1 Incomplete")
+    return (min(L), max(L), sum(L)/len(L))
 
 
 # Problem 2
@@ -19,7 +21,7 @@ def prob2():
     """Determine which Python objects are mutable and which are immutable.
     Test numbers, strings, lists, tuples, and sets. Print your results.
     """
-    raise NotImplementedError("Problem 2 Incomplete")
+    print("Lists and Sets are mutable;\nInts, Strings, and Tuples are inmutable.")
 
 
 # Problem 3
@@ -34,7 +36,7 @@ def hypot(a, b):
     Returns:
         The length of the triangle's hypotenuse.
     """
-    raise NotImplementedError("Problem 3 Incomplete")
+    return calc.sqrt(calc.sum(calc.product(a,a), calc.product(b,b)))
 
 
 # Problem 4
@@ -47,7 +49,12 @@ def power_set(A):
     Returns:
         (list(sets)): The power set of A as a list of sets.
     """
-    raise NotImplementedError("Problem 4 Incomplete")
+    my_sets = []
+    for set_len in range(len(A)+1):
+      for combos in combinations(A, set_len):
+        my_sets.append(set(combos))
+
+    return my_sets
 
 
 # Problem 5: Implement shut the box.
