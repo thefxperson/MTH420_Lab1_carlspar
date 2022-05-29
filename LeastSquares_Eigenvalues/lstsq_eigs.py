@@ -1,8 +1,8 @@
 # lstsq_eigs.py
 """Volume 1: Least Squares and Computing Eigenvalues.
-<Name>
-<Class>
-<Date>
+Parker Carlson  
+MTH 420
+4/29/2022
 """
 
 # (Optional) Import functions from your QR Decomposition lab.
@@ -12,6 +12,7 @@
 
 import numpy as np
 from matplotlib import pyplot as plt
+import scipy.linalg
 
 
 # Problem 1
@@ -26,7 +27,9 @@ def least_squares(A, b):
     Returns:
         x ((n, ) ndarray): The solution to the normal equations.
     """
-    raise NotImplementedError("Problem 1 Incomplete")
+    Q, R = np.linalg.qr(A, mode="reduced")
+    qb = Q.T @ b
+    return scipy.linalg.solve_triangular(R, qb)
 
 # Problem 2
 def line_fit():
@@ -34,7 +37,20 @@ def line_fit():
     index for the data in housing.npy. Plot both the data points and the least
     squares line.
     """
-    raise NotImplementedError("Problem 2 Incomplete")
+    data = np.load("housing.npy")
+    A = data[:,0]
+    b = data[:,1]
+    A = np.column_stack((A, np.ones(A.shape[0])))
+
+    x = least_squares(A, b)
+
+    # graph results
+    plt.scatter(data[:,0], data[:,1])
+    x_range = np.linspace(0, data[-1,0])
+    y = x[0] * x_range + x[1]
+    plt.plot(x_range, y)
+    plt.savefig("./fig.png")
+    plt.show()
 
 
 # Problem 3
@@ -43,7 +59,26 @@ def polynomial_fit():
     the year to the housing price index for the data in housing.npy. Plot both
     the data points and the least squares polynomials in individual subplots.
     """
-    raise NotImplementedError("Problem 3 Incomplete")
+    data = np.load("housing.npy")
+    A = data[:,0]
+    b = data[:,1]
+    x_range = np.linspace(0, data[-1,0])
+    for i, poly in enumerate([3,6,9,12]):
+      V = np.vander(A,poly+1)
+      x = least_squares(V, b)
+
+      #plot
+      plt.subplot(221+i)
+      plt.scatter(data[:,0], data[:,1])
+      y = np.polynomial.polynomial.Polynomial(x[::-1])
+      counter = "rd" if (poly == 3) else "th"
+      plt.title(f"{poly}{counter} degree polynomial")
+      plt.plot(x_range, y(x_range))
+
+    plt.savefig("./fig.png")
+    plt.show()
+
+
 
 
 def plot_ellipse(a, b, c, d, e):
@@ -98,3 +133,4 @@ def qr_algorithm(A, N=50, tol=1e-12):
         ((n,) ndarray): The eigenvalues of A.
     """
     raise NotImplementedError("Problem 6 Incomplete")
+
