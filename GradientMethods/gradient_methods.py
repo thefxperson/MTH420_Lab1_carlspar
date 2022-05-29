@@ -1,9 +1,11 @@
 # gradient_methods.py
 """Volume 2: Gradient Descent Methods.
-<Name>
-<Class>
-<Date>
+Parker Carlson
+MTH 420
+5/17/22
 """
+import numpy as np
+import scipy.optimize
 
 
 # Problem 1
@@ -24,7 +26,29 @@ def steepest_descent(f, Df, x0, tol=1e-5, maxiter=100):
         (bool): Whether or not the algorithm converged.
         (int): The number of iterations computed.
     """
-    raise NotImplementedError("Problem 1 Incomplete")
+    min = np.zeros_like(x0, dtype=np.float32)
+    x_k = x0.copy()
+    p_k = x0.copy()
+    alpha_k = 1.
+    for i in range(maxiter):
+        # update step weight
+        def alpha_fun(alpha):
+            return f(x_k - alpha*Df(x_k))
+
+        alpha_k = scipy.optimize.minimize_scalar(alpha_fun).x
+
+        # find direction of descent
+        p_k = -Df(x_k)
+
+        # update x_k
+        x_k = x_k + (alpha_k * p_k)
+
+        # check stopping criteria: ||grad f(x_k)||_inf < tol
+        if np.amax(Df(x_k)) < tol:
+            return (f(x_k), True, i+1)
+
+    # did not converge
+    return (f(x_k), False, maxiter)
 
 
 # Problem 2
@@ -42,7 +66,24 @@ def conjugate_gradient(Q, b, x0, tol=1e-4):
         (bool): Whether or not the algorithm converged.
         (int): The number of iterations computed.
     """
-    raise NotImplementedError("Problem 2 Incomplete")
+    x_k = x0.copy()
+    r_k = Q @ x0 - b
+    d_k = r_k.copy()
+    d_k *= -1
+    for i in range(Q.shape[0]):
+        alpha_k = (r_k.T @ r_k)/(d_k.T @ Q @ d_k)
+        x_k = x_k + (alpha_k * d_k)
+        r_k1 = r_k + alpha_k * (Q @ d_k)
+        beta_k = (r_k1.T @ r_k1)/(r_k.T @ r_k)
+        r_k = r_k1
+        d_k = -r_k + (beta_k*d_k)
+
+        # check stopping criteria: ||r_k|| < tol
+        if ((r_k @ r_k.T) ** (0.5)) < tol:
+            return (x_k, True, i+1)
+
+    # did not converge
+    return (x_k, False, Q.shape[0])
 
 
 # Problem 3
@@ -64,8 +105,38 @@ def nonlinear_conjugate_gradient(f, df, x0, tol=1e-5, maxiter=100):
         (bool): Whether or not the algorithm converged.
         (int): The number of iterations computed.
     """
-    raise NotImplementedError("Problem 3 Incomplete")
+    r_k = -1*df(x0).T
+    d_k = r_k.copy()
+    x_k = x0.copy()
+    def alpha_fun(alpha):
+        return f(x_k - alpha*d_k)
 
+    alpha_k = scipy.optimize.minimize_scalar(alpha_fun).x
+    x_k = x0 + alpha_k*d_k
+    for i in range(1,maxiter):
+        r_k1 = -1*df(x_k).T
+        #print(r_k1)
+        beta_k = (r_k1.T @ r_k1) / (r_k.T @ r_k)
+        #print(beta_k)
+        r_k = r_k1
+        d_k = r_k + (beta_k * d_k)
+        #print(d_k)
+        # update step weight
+        def alpha_fun(alpha):
+            return f(x_k - alpha*d_k)
+
+        alpha_k = scipy.optimize.minimize_scalar(alpha_fun).x
+
+        # update x_k
+        x_k = x_k + (alpha_k * d_k)
+
+        # check stopping criteria: ||grad f(x_k)||_inf < tol
+        print((r_k.T @ r_k) ** (0.5))
+        if ((r_k.T @ r_k) ** (0.5)) < tol:
+            return (f(x_k), True, i+1)
+
+    # did not converge
+    return (f(x_k), False, maxiter)
 
 # Problem 4
 def prob4(filename="linregression.txt",
@@ -74,7 +145,12 @@ def prob4(filename="linregression.txt",
     the data from the given file, the given initial guess, and the default
     tolerance. Return the solution to the corresponding Normal Equations.
     """
-    raise NotImplementedError("Problem 4 Incomplete")
+    data = np.loadtxt(filename)
+    A = data.copy()
+    A[:,0] = 1.
+    b = data[:,0]
+    res = conjugate_gradient(A.T @ A, A.T @ b, x0, tol=1e-4)
+    return res[0]
 
 
 # Problem 5
