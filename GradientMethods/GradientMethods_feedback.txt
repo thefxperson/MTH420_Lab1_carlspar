@@ -19,3 +19,24 @@ Total score: 40/50 = 80.0%
 
 -------------------------------------------------------------------------------
 
+06/14/22 00:19
+
+Problem 1 (10 points):
+Score += 10
+
+Problem 2 (10 points):
+Score += 10
+
+Problem 3 (10 points):
+ValueError: matmul: Input operand 1 does not have enough dimensions (has 0, gufunc core with signature (n?,k),(k,m?)->(n?,m?) requires 1)
+
+Problem 4 (5 points):
+Score += 5
+
+Code Quality (15 points):
+Score += 15
+
+Total score: 40/50 = 80.0%
+
+-------------------------------------------------------------------------------
+
